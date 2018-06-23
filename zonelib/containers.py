@@ -10,11 +10,17 @@ class BaseContainer:
     @classmethod
     def get_container(cls, index):
         try:
-            return cls.containers[index]
+            return cls.containers[index.as_key()]
         except KeyError:
             container = cls(index)
             cls.containers[index] = container
             return container
+
+    @classmethod
+    def make_container(cls, index):
+        container = cls(index)
+        cls.containers[index] = container
+        return container
 
 
 class RouteContainer(BaseContainer):

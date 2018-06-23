@@ -1,15 +1,21 @@
-from helpers import create_trigger
-
-
 class Route:
     """ A path from an endpoint to the callback function. """
-    def __init__(self, endpoint, event, callback):
+    def __init__(self, endpoint, event, handler):
         self.endpoint = endpoint
         self.event = event
-        self.callback = callback
+        self.handler = handler
 
     def call(self, entity, player):
-        self.callback(entity, player)
+        self.handler(entity, player)
+
+    def __hash__(self):
+        return hash((self.endpoint, self.event))
+
+    def __eq__(self, other):
+        return (self.endpoint, self.event) == (other.endpoint, other.event)
+
+    def __ne__(self, other):
+        return not self == other
 
 
 class Zone:
@@ -28,7 +34,7 @@ class Map:
     map triggers. """
     def __init__(self, name, zones={}):
         self.name = name
-        self.__zones = zones
+        self._zone = zones
 
     def get_zone(self, zone):
-        return self.__zones[zone]
+        return self._zone[zone]
