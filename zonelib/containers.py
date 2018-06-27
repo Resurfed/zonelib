@@ -8,18 +8,13 @@ class BaseContainer:
         return cls.containers.values()
 
     @classmethod
-    def get_container(cls, index):
-        try:
-            return cls.containers[index.as_key()]
-        except KeyError:
-            container = cls(index)
-            cls.containers[index] = container
-            return container
+    def get_container(cls, key):
+        return cls.containers.get(hash(key))
 
     @classmethod
     def make_container(cls, index):
         container = cls(index)
-        cls.containers[index] = container
+        cls.containers[hash(index)] = container
         return container
 
 

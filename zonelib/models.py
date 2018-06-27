@@ -38,3 +38,14 @@ class Map:
 
     def get_zone(self, zone):
         return self._zone[zone]
+
+    def add_zones(self, zones):
+        for zone in zones:
+            self.add_zone(zone)
+
+    def delete_zone(self, zone):
+        self._zone.pop(zone, None)
+
+    def add_zone(self, zone):
+        if zone not in self._zone.values():
+            self._zone[entity.index] = zone

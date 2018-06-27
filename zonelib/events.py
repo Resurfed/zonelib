@@ -1,34 +1,42 @@
 from enum import Enum
+from entities.hooks import EntityPostHook, EntityCondition
 from listeners import OnEntityDeleted, OnEntityOutput
 from .session import map_session
 from .containers import RouteContainer
+from .decorators import PostHookFilter
 
 
 class ZoneEvents(Enum):
     """ All possible zone events. """
-    ENTER = "OnStartTouch"
-    EXIT = "OnEndTouch"
+    ENTER = "start_touch"
+    EXIT = "end_touch"
 
 
-@OnEntityOutput
-def on_entity_output(output_name, activator, caller, value, delay):
-
-    if caller.classname != 'trigger_multiple':
-        return
-
-    print("end touch event")
+@EntityPostHook(EntityCondition.equals_entity_classname("trigger_multiple"), 'start_touch')
+@PostHookFilter("trigger_multiple")
+def on_start_touch(entity, player):
+    print(f"whoa this happens id {entity.index}")
     try:
-        event = ZoneEvents(output_name)
-        zone = map_session.get_zone(caller.index)
-    except ValueError:
+        zone = map_session.get_zone(entity.index)
+    except KeyError:
         return
-
-    print(f"entity output caller {str(caller)}, dir {str(dir(caller))}")
-    print(f"entity output zone {str(zone)}, dir {str(dir(zone))}")
 
     RouteContainer.get_container(
-        (zone.endpoint, event)
-    ).call(entity, player)
+        (zone.endpoint, ZoneEvents.ENTER)
+    ).route.call(zone, player)
+
+
+@EntityPostHook(EntityCondition.equals_entity_classname("trigger_multiple"), 'end_touch')
+@PostHookFilter("trigger_multiple")
+def on_end_touch(entity, player):
+    try:
+        zone = map_session.get_zone(entity.index)
+    except KeyError:
+        return
+
+    RouteContainer.get_container(
+        (zone.endpoint, ZoneEvents.EXIT)
+    ).route.call(zone, player)
 
 
 @OnEntityDeleted
