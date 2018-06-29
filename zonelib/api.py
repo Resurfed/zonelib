@@ -1,13 +1,13 @@
 
-from .session import map_session
+from .session import MapSession
 from .models import Route
-from .containers import RouteContainer
+from .containers import route_container, map_container
 
 
 def create(zones):
-    map_session.add_zones(zones)
+    map_container.get_session().add_zones(zones)
 
 
 def set_event_handlers(routes):
     for r in routes:
-        RouteContainer.make_container(r)
+        route_container.store(r)

@@ -1,24 +1,36 @@
-class BaseContainer:
-    """ Mixin for class self-management. """
-    def __init_subclass__(cls):
-        cls.containers = {}
-
-    @classmethod
-    def get_containers(cls):
-        return cls.containers.values()
-
-    @classmethod
-    def get_container(cls, key):
-        return cls.containers.get(hash(key))
-
-    @classmethod
-    def make_container(cls, index):
-        container = cls(index)
-        cls.containers[hash(index)] = container
-        return container
+from .session import MapSession
 
 
-class RouteContainer(BaseContainer):
+class RouteContainer:
     """ Manages instances of routes. """
-    def __init__(self, route):
-        self.route = route
+    def __init__(self):
+        self.routes = {}
+
+    def get(self, endpoint, event):
+        return self.routes.get(hash((endpoint, event)))
+
+    def store(self, route):
+
+        try:
+            routes = self.routes[hash(route)]
+        except KeyError:
+            routes = []
+            self.routes[hash(route)] = routes
+
+        routes.append(route)
+
+
+class MapSessionContainer:
+    def get_session(self):
+        try:
+            return self.sessions
+        except AttributeError:
+            self.sessions = MapSession()
+            return self.sessions
+
+    def reset_session(self, index):
+        self.sessions = MapSession()
+
+
+route_container = RouteContainer()
+map_container = MapSessionContainer()

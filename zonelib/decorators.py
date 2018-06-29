@@ -1,6 +1,26 @@
 import memory
 from entities.entity import Entity
 from players.entity import Player
+from .models import Route
+from .containers import route_container
+
+
+class ZoneRoute:
+
+    def __init__(self, endpoint, event):
+        self.endpoint = endpoint
+        self.event = event
+
+    def __call__(self, callback):
+        self.callback = callback
+        route = Route(
+            endpoint=self.endpoint,
+            event=self.event,
+            handler=callback
+        )
+
+        route_container.store(route)
+        return callback
 
 
 def PostHookFilter(classname):

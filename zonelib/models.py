@@ -21,31 +21,31 @@ class Route:
 class Zone:
     """ A generic representation of a zone. """
 
-    def __init__(self, endpoint, start, end, filter_name=None, properties={}):
+    def __init__(
+        self, endpoint, start, end,
+        filter_name=None, properties={}, entity=None
+    ):
+
         self.endpoint = endpoint
         self.start = start
         self.end = end
         self.filter_name = filter_name
         self.properties = properties
+        self.entity = entity
 
 
 class Map:
-    """ For our needs, just a collection of zones representing
-    map triggers. """
-    def __init__(self, name, zones={}):
-        self.name = name
-        self._zone = zones
-
-    def get_zone(self, zone):
-        return self._zone[zone]
+    """  A collection of zones. """
+    def __init__(self):
+        self._zones = []
 
     def add_zones(self, zones):
         for zone in zones:
             self.add_zone(zone)
 
-    def delete_zone(self, zone):
-        self._zone.pop(zone, None)
-
     def add_zone(self, zone):
-        if zone not in self._zone.values():
-            self._zone[entity.index] = zone
+        if zone not in self._zones:
+            self._zones.append(zone)
+
+    def delete_zone(self, zone):
+        self._zones.remove(zone, None)
